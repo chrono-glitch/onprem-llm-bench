@@ -24,6 +24,24 @@ def _peak_ram_gb() -> float:
     return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 3)
 
 
+def _perf_rates(llm):
+    """(prefill_tok_s, decode_tok_s) from llama.cpp's own timing counters, or
+    (None, None) if the internal API isn't reachable in this build."""
+    try:
+        import llama_cpp
+        ctx = getattr(getattr(llm, "_ctx", None), "ctx", None)
+        if ctx is None:
+            return None, None
+        d = llama_cpp.llama_perf_context(ctx)
+        pref = d.n_p_eval / (d.t_p_eval_ms / 1000) if d.t_p_eval_ms else None
+        dec = d.n_eval / (d.t_eval_ms / 1000) if d.t_eval_ms else None
+        if pref and dec:
+            return round(pref, 1), round(dec, 1)
+    except Exception:
+        pass
+    return None, None
+
+
 def _gpu_name() -> str | None:
     try:
         out = os.popen("nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null").read().strip()
@@ -52,19 +70,22 @@ def run(model_key: str, quant: str, n_threads: int | None = None,
     prompt = llm.detokenize(toks).decode(errors="ignore")
     n_prompt = len(toks)
 
-    # run 1: generate 1 token -> time ~= prefill
-    t0 = time.perf_counter()
-    llm.create_completion(prompt, max_tokens=1, temperature=0.0)
-    prefill_s = time.perf_counter() - t0
-
-    # run 2: generate DECODE_TOKENS -> decode rate = extra tokens / extra time
+    # one generation, then read llama.cpp's own perf counters (exact prefill vs
+    # decode split, no call-overhead contamination). Fall back to wall clock.
     llm.reset()
     t0 = time.perf_counter()
     out = llm.create_completion(prompt, max_tokens=DECODE_TOKENS, temperature=0.0)
     total_s = time.perf_counter() - t0
     n_gen = out["usage"]["completion_tokens"]
 
-    decode_s = max(total_s - prefill_s, 1e-6)
+    prefill_tps, decode_tps = _perf_rates(llm)
+    if prefill_tps is None:                     # fallback: 2-run wall clock
+        llm.reset()
+        t1 = time.perf_counter()
+        llm.create_completion(prompt, max_tokens=1, temperature=0.0)
+        prefill_s = time.perf_counter() - t1
+        prefill_tps = round(n_prompt / prefill_s, 1)
+        decode_tps = round(max(n_gen - 1, 1) / max(total_s - prefill_s, 1e-6), 1)
 
     def chat(prompt: str) -> str:
         llm.reset()
@@ -85,8 +106,8 @@ def run(model_key: str, quant: str, n_threads: int | None = None,
         "file_gb": size_gb,
         "load_s": load_s,
         "n_threads": n_threads,
-        "prefill_tok_s": round(n_prompt / prefill_s, 1),
-        "decode_tok_s": round(max(n_gen - 1, 1) / decode_s, 1),
+        "prefill_tok_s": prefill_tps,
+        "decode_tok_s": decode_tps,
         "peak_ram_gb": _peak_ram_gb(),
         **q,
     }
