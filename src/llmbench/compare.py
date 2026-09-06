@@ -34,7 +34,8 @@ def load(p: str) -> dict:
 
 def main(cpu_path: str, gpu_path: str):
     cpu, gpu = load(cpu_path), load(gpu_path)
-    keys = sorted(set(cpu) | set(gpu), key=lambda k: (cpu.get(k, gpu[k])["params_b"], *k))
+    keys = sorted(set(cpu) | set(gpu),
+                  key=lambda k: ((cpu.get(k) or gpu.get(k))["params_b"], *k))
 
     hdr = (f"{'model':<14}{'quant':<8}"
            f"{'CPU tok/s':>10}{'GPU tok/s':>10}{'speedup':>9}"

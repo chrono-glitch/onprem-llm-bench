@@ -68,3 +68,15 @@ next section. Prefill/decode numbers use llama.cpp's own perf counters.
 
 *ES: versión en español pendiente — "Servir LLMs on-prem sin GPU: los números y
 cómo elegir".*
+
+## GPU (Tesla P100) — the break-even
+
+Same models on a Kaggle P100: decode is **3.5–4× faster** than CPU (3B ~60 tok/s,
+7–8B ~35 tok/s) and **prefill is 20–30× faster** (~800–1700 vs ~55 tok/s). But a
+GPU rents for ~8× a CPU box. So **on pure cost per token, the CPU box wins.**
+
+Get the GPU when: (1) a person is waiting on the output — 60 tok/s vs 17 is a
+different product; (2) you need a model that won't run on CPU — `qwen2.5-14b Q4`
+hits **0.93** quality at a usable 19 tok/s on the P100, vs ~3 tok/s (unusable) on
+CPU; (3) RAG / long prompts — prefill dominates and the GPU is 20–30× ahead.
+On GPU, `Q8_0` is fine — the "Q4 only" rule is CPU-specific.

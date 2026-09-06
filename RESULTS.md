@@ -41,12 +41,47 @@ re-running; excluded above.)*
 5. **7B on CPU ≈ 9 tok/s, half the 3B speed.** Usable for batch / agents /
    non-interactive; borderline for live chat.
 
-## GPU — Kaggle T4  ·  *(running)*
+## GPU — Kaggle, Tesla P100 16 GB  ·  2026-09-06  ·  `results/gpu_grid.json`
 
-`kaggle/` pushes the same grid to a free Kaggle T4 (`n_gpu_layers=-1`), models up
-to 14B. Pulls `results/gpu_grid.json`. The headline it produces:
-**same models, CPU vs T4 → decode tok/s, cost per 1M tokens, quality — and the
-break-even: when is a GPU worth it?**
+11 cells, all layers on GPU. Same models, same probe.
+
+| model | quant | decode tok/s | prefill tok/s | quality |
+|---|---|---|---|---|
+| gemma-2-2b | Q4_K_M | 68.8 | 1290 | 0.57 |
+| gemma-2-2b | Q8_0 | 72.3 | 1760 | 0.50 |
+| qwen2.5-3b | Q4_K_M | 58.6 | 1569 | 0.70 |
+| qwen2.5-3b | Q8_0 | 61.9 | 1629 | 0.73 |
+| llama-3.2-3b | Q4_K_M | 62.7 | 1241 | 0.67 |
+| qwen2.5-7b | Q4_K_M | 36.1 | 774 | 0.87 |
+| qwen2.5-7b | Q8_0 | 35.2 | 844 | 0.87 |
+| llama-3.1-8b | Q4_K_M | 34.1 | 639 | 0.67 |
+| llama-3.1-8b | Q8_0 | 32.7 | 696 | 0.70 |
+| **qwen2.5-14b** | Q4_K_M | **19.1** | 281 | **0.93** |
+
+## CPU vs GPU — the decision (`python -m llmbench.compare`)
+
+| | CPU (8 vCPU) | GPU (P100) | ratio |
+|---|---|---|---|
+| decode, 3B | ~17 tok/s | ~60 tok/s | **3.5×** |
+| decode, 7–8B | ~9 tok/s | ~35 tok/s | **3.8×** |
+| prefill (RAG-relevant) | ~50–60 tok/s | **~800–1700 tok/s** | **20–30×** |
+| rent (rough) | ~$0.05/h | ~$0.40/h | 8× |
+| $ per 1M output tokens | **~$0.75–1.9** | ~$1.5–3.3 | GPU costs *more* |
+
+**The break-even:** GPU rent is ~8× the CPU box; GPU decode is only ~3.5–4× faster
+→ **on pure $/token, the CPU box is cheaper.** The GPU earns its keep on:
+
+1. **Latency / UX** — 60 tok/s vs 17 is a snappy assistant vs a sluggish one.
+   For anything a person waits on, get the GPU.
+2. **Models that don't run on CPU** — `qwen2.5-14b Q4` scores **0.93** (a new
+   high) at a usable 19 tok/s on the P100; on CPU it's ~3 tok/s, i.e. unusable.
+3. **RAG / long context** — prefill is 20–30× faster. A 4k-token prompt is
+   near-instant on GPU, a multi-second stall on CPU.
+4. On GPU, **Q8_0 is fine** — sometimes faster than Q4, quality equal or better.
+   The "Q4 only" rule is CPU-specific.
+
+Plot: `results/cpu_vs_gpu.png`.
+
 
 ## Method caveats (harden next)
 
