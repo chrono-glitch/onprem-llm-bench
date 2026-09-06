@@ -59,7 +59,7 @@ def run(model_key: str, quant: str, n_threads: int | None = None) -> dict:
         llm.reset()
         r = llm.create_chat_completion(
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=200, temperature=0.0,
+            max_tokens=48, temperature=0.0,
         )
         return r["choices"][0]["message"]["content"] or ""
 
