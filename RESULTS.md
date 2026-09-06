@@ -1,57 +1,56 @@
 # Results
 
-**Box:** 8 vCPU AMD EPYC 7B12, 31 GB RAM, no GPU. `llama-cpp-python` 0.3.35
-(CPU wheel). Prompt ≈ 512 tokens, decode 128 tokens, 8 threads.
-Quality = 25 MCQ + 5 format-following items (a sanity gauge, not a real eval).
+**Box:** 8 vCPU AMD EPYC 7B12, 31 GB RAM, no GPU. `llama-cpp-python` 0.3.35.
+Prompt ≈ 512 tok, decode 128 tok, 8 threads. Quality = 25 MCQ + 5
+format-following items — a **sanity gauge, not a real eval** (n=30).
 
-## Run 1 — 3B-class models, Q4_K_M vs Q8_0  ·  2026-09-06
+## CPU — full grid (Runs 1 + 2)  ·  2026-09-06  ·  `results/cpu_all.json` / `.png`
 
-| model | quant | file GB | load s | prefill tok/s | **decode tok/s** | peak RAM GB | quality (mcq / fmt) |
-|---|---|---|---|---|---|---|---|
-| gemma-2-2b | Q4_K_M | 1.71 | 9.5 | 61.5 | 15.4 | 3.3 | 0.53 (0.44 / 1.00) |
-| gemma-2-2b | Q8_0 | 2.78 | 1.6 | 49.2 | 12.1 | 3.8 | 0.50 |
-| llama-3.2-3b | Q4_K_M | 2.02 | 4.6 | 46.3 | **18.4** | 4.1 | 0.67 (0.64 / 0.80) |
-| llama-3.2-3b | Q8_0 | 3.42 | 1.7 | 35.9 | 12.7 | 4.6 | 0.67 |
-| **qwen2.5-3b** | **Q4_K_M** | 1.93 | 3.1 | 48.3 | 16.1 | **3.6** | **0.70** (0.68 / 0.80) |
-| qwen2.5-3b | Q8_0 | 3.29 | 1.0 | 33.3 | 15.3 | 3.7 | 0.70 |
-| phi-3.5-mini | Q4_K_M | 2.39 | 6.0 | 27.9 | 14.0 | 5.4 | **0.77** (0.72 / 1.00) |
-| phi-3.5-mini | Q8_0 | 4.06 | 1.5 | 27.7 | 10.3 | 5.7 | 0.73 |
+| model | params | quant | file GB | decode tok/s | peak RAM GB | quality |
+|---|---|---|---|---|---|---|
+| gemma-2-2b | 2.6 | Q4_K_M | 1.7 | 15.4 | 3.3 | 0.53 |
+| gemma-2-2b | 2.6 | Q8_0 | 2.8 | 12.1 | 3.8 | 0.50 |
+| qwen2.5-3b | 3.1 | Q3_K_M | 1.6 | 17.2 | 2.5 | 0.63 |
+| **qwen2.5-3b** | 3.1 | **Q4_K_M** | 1.9 | **16.7** | **3.6** | **0.70** |
+| qwen2.5-3b | 3.1 | Q8_0 | 3.3 | 15.3 | 3.7 | 0.70 |
+| llama-3.2-3b | 3.2 | Q4_K_M | 2.0 | **18.4** | 4.1 | 0.67 |
+| llama-3.2-3b | 3.2 | Q8_0 | 3.4 | 12.7 | 4.6 | 0.67 |
+| phi-3.5-mini | 3.8 | Q4_K_M | 2.4 | 13.7 | 5.4 | 0.77 |
+| phi-3.5-mini | 3.8 | Q8_0 | 4.1 | 10.3 | 5.7 | 0.73 |
+| mistral-7b | 7.2 | Q4_K_M | 4.4 | 9.2 | 8.4 | 0.53 |
+| **qwen2.5-7b** | 7.6 | **Q3_K_M** | 3.8 | 7.2 | **5.5** | **0.87** |
+| **qwen2.5-7b** | 7.6 | **Q4_K_M** | 4.7 | 9.7 | 8.2 | **0.87** |
+| llama-3.1-8b | 8.0 | Q4_K_M | 4.9 | 9.1 | 9.1 | 0.67 |
 
-## What this already says
+*(mistral-7b Q3_K_M reported 37 tok/s / 0.57 quality — a measurement artifact,
+re-running; excluded above.)*
 
-1. **On CPU, there is no quality reason to run Q8 over Q4_K_M.** Across all four
-   models the quality score is equal or *better* at Q4 (gemma 0.53 vs 0.50;
-   llama 0.67 = 0.67; qwen 0.70 = 0.70; phi 0.77 vs 0.73), while Q4 is
-   **20–40 % faster to decode** and uses ~15–25 % less RAM. The quality cliff, if
-   there is one, is below Q4 — Run 2 checks Q3.
+## What the CPU grid says
 
-2. **qwen2.5-3b @ Q4_K_M is the sweet spot for the 3B class** — 16 tok/s, 3.6 GB,
-   quality 0.70. Best quality per GB and per tok/s.
+1. **qwen2.5-7b is a different tier — 0.87 quality vs ~0.70 for the whole 3B
+   class** — and it *holds 0.87 even at Q3_K_M* (5.5 GB, 7 tok/s). If the box has
+   ~6 GB free and you can live with ~7 tok/s, this is the pick.
+2. **The 3B sweet spot is qwen2.5-3b Q4_K_M** — 16.7 tok/s, 3.6 GB, 0.70. Fast
+   enough for interactive chat on a commodity box, no GPU.
+3. **On CPU there is no reason to run Q8_0** — quality is equal or worse than Q4
+   for every model, at 20–40 % lower throughput and more RAM. Q3_K_M is the real
+   floor: fine for qwen (0.87 = 0.87) and phi, costs llama ~4 pts, breaks nothing.
+4. **Two models to skip:** `llama-3.1-8b` (0.67 — no better than the 3.2-3B at
+   2.5× the size) and `gemma-2-2b` (0.44 on reasoning, though perfect on
+   format-following — a niche pick for constrained output).
+5. **7B on CPU ≈ 9 tok/s, half the 3B speed.** Usable for batch / agents /
+   non-interactive; borderline for live chat.
 
-3. **phi-3.5-mini has the best quality (0.77)** but pays for it: slowest decode
-   (14 → 10 tok/s) and heaviest RAM (5.4 GB). The "I need the accuracy" pick.
+## GPU — Kaggle T4  ·  *(running)*
 
-4. **gemma-2-2b is the outlier** — weak on multiple-choice reasoning (0.44) despite
-   its reputation, but perfect on format-following (1.00). Fast and light, good
-   for constrained-output tasks, not for reasoning.
+`kaggle/` pushes the same grid to a free Kaggle T4 (`n_gpu_layers=-1`), models up
+to 14B. Pulls `results/gpu_grid.json`. The headline it produces:
+**same models, CPU vs T4 → decode tok/s, cost per 1M tokens, quality — and the
+break-even: when is a GPU worth it?**
 
-5. **15–18 tok/s decode on 8 CPU cores** is faster than reading speed — a
-   3B model at Q4 is a usable chatbot on a commodity box with no GPU.
+## Method caveats (harden next)
 
-## Caveats / methodology to harden (Run 2)
-
-- Prefill number includes `create_completion` call overhead — switch to
-  llama.cpp's own timing counters.
-- Single run per cell; add 3 repeats for tok/s variance.
-- Quality probe is 30 items — directional only. Not MMLU.
-- All single-request. The concurrency test (2–4 parallel) is the real on-prem
-  question and comes next.
-
-## Next
-
-- Run 2: add mistral-7b / qwen2.5-7b / llama-3.1-8b, and Q3_K_M — does 7B beat
-  3B enough to justify ~2× the RAM and ~½ the speed on CPU? Where's the quant cliff?
-- Pareto plot (quality vs decode tok/s, bubble size = RAM).
-- Engine #2: Ollama — wrapper overhead?
-- Concurrency curve.
-- Realistic workloads: a long-context RAG prompt vs a short chat prompt.
+- Prefill number includes call overhead — move to llama.cpp's timing counters.
+- Single run per cell — add 3 repeats + spread.
+- Quality probe is directional (n=30), not MMLU.
+- All single-request; the concurrency curve (1/2/4 parallel) is next.
