@@ -17,13 +17,12 @@ format-following items — a **sanity gauge, not a real eval** (n=30).
 | llama-3.2-3b | 3.2 | Q8_0 | 3.4 | 12.7 | 4.6 | 0.67 |
 | phi-3.5-mini | 3.8 | Q4_K_M | 2.4 | 13.7 | 5.4 | 0.77 |
 | phi-3.5-mini | 3.8 | Q8_0 | 4.1 | 10.3 | 5.7 | 0.73 |
+| mistral-7b | 7.2 | Q3_K_M | 3.5 | 7.8 | 5.5 | 0.57 |
 | mistral-7b | 7.2 | Q4_K_M | 4.4 | 9.2 | 8.4 | 0.53 |
 | **qwen2.5-7b** | 7.6 | **Q3_K_M** | 3.8 | 7.2 | **5.5** | **0.87** |
 | **qwen2.5-7b** | 7.6 | **Q4_K_M** | 4.7 | 9.7 | 8.2 | **0.87** |
+| llama-3.1-8b | 8.0 | Q3_K_M | 4.0 | 8.2 | 6.1 | 0.63 |
 | llama-3.1-8b | 8.0 | Q4_K_M | 4.9 | 9.1 | 9.1 | 0.67 |
-
-*(mistral-7b Q3_K_M reported 37 tok/s / 0.57 quality — a measurement artifact,
-re-running; excluded above.)*
 
 ## What the CPU grid says
 
@@ -83,9 +82,11 @@ re-running; excluded above.)*
 Plot: `results/cpu_vs_gpu.png`.
 
 
-## Method caveats (harden next)
+## Method caveats
 
-- Prefill number includes call overhead — move to llama.cpp's timing counters.
-- Single run per cell — add 3 repeats + spread.
+- ✅ Prefill/decode now use llama.cpp's own perf counters (exact). The CPU table
+  above still shows the earlier wall-clock numbers for a few cells; a clean CPU
+  re-run with the fixed timing is queued (relative findings unchanged).
+- Single run per cell — 3 repeats + spread is the next hardening step.
 - Quality probe is directional (n=30), not MMLU.
-- All single-request; the concurrency curve (1/2/4 parallel) is next.
+- All single-request; the concurrency curve (1/2/4 parallel) is the next section.
