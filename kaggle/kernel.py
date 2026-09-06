@@ -5,8 +5,10 @@ Push with `kaggle/drive.sh`. Enable: GPU + Internet. Output lands in
 """
 import json, os, subprocess, sys, time
 
+# T4 = 16GB VRAM / ~20GB disk. Q4 of 14B ~9GB fits fully; 32B Q4 ~19GB blows the
+# disk quota, so it's opt-in via LLMBENCH_MODELS.
 MODELS = os.environ.get("LLMBENCH_MODELS",
-    "qwen2.5-7b,llama-3.1-8b,qwen2.5-14b,qwen2.5-32b").split(",")
+    "gemma-2-2b,qwen2.5-3b,llama-3.2-3b,qwen2.5-7b,llama-3.1-8b,qwen2.5-14b").split(",")
 QUANTS = os.environ.get("LLMBENCH_QUANTS", "Q4_K_M,Q8_0").split(",")
 
 # CUDA wheel for llama-cpp-python (matches Kaggle's CUDA 12.x)
@@ -23,8 +25,10 @@ os.system("nvidia-smi --query-gpu=name,memory.total --format=csv,noheader")
 rows = []
 for mk in MODELS:
     for q in QUANTS:
-        # 32B-Q8 won't fit a 16GB T4 — skip
-        if models.REGISTRY[mk].params_b >= 30 and q == "Q8_0":
+        pb = models.REGISTRY[mk].params_b
+        if pb >= 30 and q != "Q3_K_M":      # only Q3 of 30B+ fits a T4
+            continue
+        if pb >= 13 and q == "Q8_0":        # 14B Q8 ~16GB, too tight
             continue
         print(f"=== {mk} {q} ===", flush=True)
         t0 = time.time()

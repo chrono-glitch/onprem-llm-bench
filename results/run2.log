@@ -1,3 +1,26 @@
   qwen2.5-3b     Q3_K_M   ... decode  17.2 tok/s | ram 2.524 GB | quality 0.63  (166s)
   qwen2.5-3b     Q4_K_M   ... decode  16.7 tok/s | ram   3.6 GB | quality 0.70  (101s)
-  phi-3.5-mini   Q3_K_M   ... 
+  phi-3.5-mini   Q3_K_M   ... decode  11.4 tok/s | ram 4.764 GB | quality 0.73  (224s)
+  phi-3.5-mini   Q4_K_M   ... decode  13.7 tok/s | ram 5.356 GB | quality 0.77  (205s)
+  mistral-7b     Q3_K_M   ... decode  37.3 tok/s | ram 5.528 GB | quality 0.57  (305s)
+  mistral-7b     Q4_K_M   ... decode   9.2 tok/s | ram 8.387 GB | quality 0.53  (227s)
+  qwen2.5-7b     Q3_K_M   ... decode   7.2 tok/s | ram  5.54 GB | quality 0.87  (319s)
+  qwen2.5-7b     Q4_K_M   ... decode   9.7 tok/s | ram 8.208 GB | quality 0.87  (208s)
+  llama-3.1-8b   Q3_K_M   ... decode   8.2 tok/s | ram 6.121 GB | quality 0.63  (369s)
+  llama-3.1-8b   Q4_K_M   ... decode   9.1 tok/s | ram 9.103 GB | quality 0.67  (291s)
+
+=== on-prem LLM serving, this box (8 vCPU AMD EPYC, no GPU) ===
+model         quant       GB  load_s  prefill  decode  RAM_GB   qual
+--------------------------------------------------------------------
+llama-3.1-8b  Q3_K_M   4.019    2.92     13.8     8.2   6.121   0.63
+llama-3.1-8b  Q4_K_M   4.921    6.71     19.6     9.1   9.103   0.67
+mistral-7b    Q3_K_M   3.523    3.29     10.4    37.3   5.528   0.57
+mistral-7b    Q4_K_M   4.373    5.74     19.8     9.2   8.387   0.53
+phi-3.5-mini  Q3_K_M   1.955    5.51     27.6    11.4   4.764   0.73
+phi-3.5-mini  Q4_K_M   2.393   20.94     26.5    13.7   5.356   0.77
+qwen2.5-3b    Q3_K_M    1.59    2.37     31.2    17.2   2.524   0.63
+qwen2.5-3b    Q4_K_M    1.93    13.1     45.5    16.7     3.6   0.70
+qwen2.5-7b    Q3_K_M   3.808    2.55     14.8     7.2    5.54   0.87
+qwen2.5-7b    Q4_K_M   4.683    4.78     21.5     9.7   8.208   0.87
+
+saved: results/grid_20260906-220148.json
