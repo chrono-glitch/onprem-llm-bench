@@ -59,12 +59,33 @@ Reglas prácticas de los datos:
 
 `results/cpu_all.json`, tabla en `RESULTS.md`, gráfico de Pareto `results/cpu_all.png`.
 
+## Concurrencia: una caja de CPU es una unidad de un solo usuario
+
+Primero, un hallazgo de infraestructura: un objeto `Llama` de `llama-cpp-python`
+**no es seguro para concurrencia** — dos hilos llamándolo al mismo tiempo hacen
+segfault. On-prem hay que ponerle un servidor adelante (`llama_cpp.server`), que
+encola las peticiones.
+
+Con ese servidor y `qwen2.5-3b Q4_K_M`, disparando C peticiones en paralelo:
+
+| concurrencia | latencia p50 | p95 | tok/s agregado | latencia vs C=1 |
+|---|---|---|---|---|
+| 1 | 5.7 s | 5.7 s | 16.4 | 1.0× |
+| 2 | 7.8 s | 10.5 s | 18.0 | 1.4× |
+| 4 | 13.0 s | 20.9 s | 18.0 | 2.3× |
+| 8 | 27.6 s | 45.8 s | 16.4 | 4.9× |
+
+**El throughput agregado es plano (~16–18 tok/s) sin importar la concurrencia** —
+una sola petición ya satura los 8 núcleos, así que las peticiones paralelas solo
+hacen cola. La latencia crece casi lineal con la carga. Una caja de CPU sirve
+**un usuario interactivo a la vez**, o una cola de batch que nadie espera en vivo.
+Para N usuarios concurrentes: ~N cajas, o una GPU.
+
 ## Advertencias
 
-Prueba de calidad de 30 ítems (direccional, no es un benchmark real). Solo
-peticiones de a una — la curva de concurrencia (2–4 en paralelo, la pregunta real
-de una máquina compartida) es la próxima sección. Los números de prefill/decode
-usan los contadores de rendimiento propios de llama.cpp.
+Prueba de calidad de 30 ítems (direccional, no es un benchmark real). Un solo run
+por celda — 3 repeticiones + dispersión es el siguiente paso de robustez. Los
+números de prefill/decode usan los contadores de rendimiento propios de llama.cpp.
 
 ## GPU (Tesla P100) — the break-even
 

@@ -1,0 +1,38 @@
+[
+  {
+    "model": "qwen2.5-3b",
+    "quant": "Q4_K_M",
+    "concurrency": 1,
+    "p50_s": 5.68,
+    "p95_s": 5.68,
+    "agg_tok_s": 16.4,
+    "latency_x_vs_c1": 1.0
+  },
+  {
+    "model": "qwen2.5-3b",
+    "quant": "Q4_K_M",
+    "concurrency": 2,
+    "p50_s": 7.84,
+    "p95_s": 10.46,
+    "agg_tok_s": 18.0,
+    "latency_x_vs_c1": 1.38
+  },
+  {
+    "model": "qwen2.5-3b",
+    "quant": "Q4_K_M",
+    "concurrency": 4,
+    "p50_s": 13.0,
+    "p95_s": 20.88,
+    "agg_tok_s": 18.0,
+    "latency_x_vs_c1": 2.29
+  },
+  {
+    "model": "qwen2.5-3b",
+    "quant": "Q4_K_M",
+    "concurrency": 8,
+    "p50_s": 27.62,
+    "p95_s": 45.76,
+    "agg_tok_s": 16.4,
+    "latency_x_vs_c1": 4.86
+  }
+]

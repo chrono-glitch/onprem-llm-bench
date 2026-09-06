@@ -58,11 +58,31 @@ Rules of thumb from the data:
 
 `results/cpu_all.json`, table in `RESULTS.md`, Pareto plot `results/cpu_all.png`.
 
+## Concurrency: a CPU box is a single-user serving unit
+
+An infra finding first: a `llama-cpp-python` `Llama` object is **not
+concurrency-safe** — two threads calling it segfault. On-prem you must put a
+server in front (`llama_cpp.server`), which queues requests.
+
+With that server and `qwen2.5-3b Q4_K_M`, firing C requests in parallel:
+
+| concurrency | p50 latency | p95 | aggregate tok/s | latency vs C=1 |
+|---|---|---|---|---|
+| 1 | 5.7 s | 5.7 s | 16.4 | 1.0× |
+| 2 | 7.8 s | 10.5 s | 18.0 | 1.4× |
+| 4 | 13.0 s | 20.9 s | 18.0 | 2.3× |
+| 8 | 27.6 s | 45.8 s | 16.4 | 4.9× |
+
+**Aggregate throughput is flat (~16–18 tok/s) regardless of concurrency** — one
+request already saturates all 8 cores, so parallel requests just queue. Latency
+scales ~linearly with load. A CPU box serves **one interactive user at a time**,
+or a batch queue nobody waits on live. For N concurrent users: ~N boxes, or a GPU.
+
 ## Caveats
 
-30-item quality probe (directional, not a real eval). Single-request only — the
-concurrency curve (2–4 parallel requests, the real shared-box question) is the
-next section. Prefill/decode numbers use llama.cpp's own perf counters.
+30-item quality probe (directional, not a real eval). Single run per cell — 3
+repeats + spread is the next hardening step. Prefill/decode numbers use
+llama.cpp's own perf counters.
 
 ---
 

@@ -32,8 +32,10 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
       tok/s, cost/1M tokens, quality.
 
 ## Days 3–6 — the on-prem reality
-- [ ] **Concurrency**: 1 / 2 / 4 parallel requests → throughput vs p50/p95 latency.
-      This is the real question for a shared box. (`bench.py` → an async/threaded mode.)
+- [x] **Concurrency**: 1/2/4/8 parallel → `llmbench.conc` (spawns `llama_cpp.server`).
+      Finding: **aggregate tok/s is flat (~16–18); a CPU box is a single-user unit.**
+      Latency 4.9× at C=8. Also proved bare `Llama` is not concurrency-safe (segfault).
+      → `results/conc.json`, folded into RESULTS.md + both writeups.
 - [ ] **Realistic workloads**: a long-context RAG prompt (~3k tokens) vs a short
       chat prompt. Prefill dominates RAG; decode dominates chat.
 - [ ] **Engine #2 — Ollama** *(needs Dante: `curl -fsSL https://ollama.com/install.sh | sudo sh`)*.

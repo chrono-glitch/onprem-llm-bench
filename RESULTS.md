@@ -82,6 +82,27 @@ format-following items — a **sanity gauge, not a real eval** (n=30).
 Plot: `results/cpu_vs_gpu.png`.
 
 
+## Concurrency — N users, one CPU box  ·  2026-09-06  ·  `results/conc.json`
+
+`qwen2.5-3b Q4_K_M`, one `llama_cpp.server` instance on the 8-vCPU box, C parallel
+`POST /v1/completions` (96-token generations). *(First: a bare `llama-cpp-python`
+`Llama` object is **not** concurrency-safe — two threads calling it segfault
+(`GGML_ASSERT`). On-prem you must front it with a server. This runs that server.)*
+
+| concurrency | p50 latency | p95 latency | aggregate tok/s | latency vs C=1 |
+|---|---|---|---|---|
+| 1 | 5.7 s | 5.7 s | 16.4 | 1.0× |
+| 2 | 7.8 s | 10.5 s | 18.0 | 1.4× |
+| 4 | 13.0 s | 20.9 s | 18.0 | 2.3× |
+| 8 | 27.6 s | 45.8 s | 16.4 | 4.9× |
+
+**Aggregate throughput is flat (~16–18 tok/s) no matter the concurrency** — one
+request already saturates all 8 cores, so parallel requests just queue. Latency
+scales ~linearly with load (4.9× at 8 users). A single CPU box is a **single-user**
+serving unit: one interactive session at a time, or a batch queue that people
+don't wait on. For N concurrent live users you need ~N boxes (or a GPU — see
+above), not a bigger prompt for the scheduler.
+
 ## Method caveats
 
 - ✅ Prefill/decode now use llama.cpp's own perf counters (exact). The CPU table
@@ -89,4 +110,3 @@ Plot: `results/cpu_vs_gpu.png`.
   re-run with the fixed timing is queued (relative findings unchanged).
 - Single run per cell — 3 repeats + spread is the next hardening step.
 - Quality probe is directional (n=30), not MMLU.
-- All single-request; the concurrency curve (1/2/4 parallel) is the next section.
