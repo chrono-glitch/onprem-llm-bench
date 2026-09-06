@@ -2,20 +2,19 @@
 # Push the GPU benchmark to a Kaggle notebook, wait, pull the results.
 #
 # Needs a FULL Kaggle API token in ~/.kaggle/kaggle.json (Account -> Settings ->
-# API -> "Create New API Token"). The KGAT_-prefixed scoped token can read
-# datasets but CANNOT push kernels (401).
+# API -> "Create New API Token"). A KGAT_-prefixed scoped token cannot push kernels.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-STAGE=$(mktemp -d)
-mkdir -p "$STAGE/src"
-cp -r src/llmbench "$STAGE/src/"
-cp kaggle/kernel.py "$STAGE/main.py"
+python3 kaggle/build_kernel.py          # regenerate the self-contained bundle
 
+STAGE=$(mktemp -d)
+cp kaggle/_bundle.py "$STAGE/main.py"
 USER=$(python3 -c "import json;print(json.load(open('$HOME/.kaggle/kaggle.json'))['username'])")
+SLUG="$USER/onprem-llm-bench-gpu"
 cat > "$STAGE/kernel-metadata.json" <<EOF
 {
-  "id": "$USER/onprem-llm-bench-gpu",
+  "id": "$SLUG",
   "title": "onprem-llm-bench-gpu",
   "code_file": "main.py",
   "language": "python",
@@ -26,20 +25,21 @@ cat > "$STAGE/kernel-metadata.json" <<EOF
 }
 EOF
 
-echo "pushing kernel..."
+echo "pushing $SLUG ..."
 kaggle kernels push -p "$STAGE"
 
-echo "waiting for run to finish (poll every 60s)..."
+echo "polling (every 90s; a full grid is ~1-2h on a T4)..."
 while :; do
-  st=$(kaggle kernels status "$USER/onprem-llm-bench-gpu" 2>&1 || true)
-  echo "  $st"
+  sleep 90
+  st=$(kaggle kernels status "$SLUG" 2>&1 || true)
+  echo "  $(date +%H:%M)  $st"
   case "$st" in
     *complete*) break ;;
-    *error*|*cancel*) echo "run failed"; exit 1 ;;
+    *error*)    echo "!! run errored — pulling log"; break ;;
+    *cancel*)   echo "!! cancelled"; exit 1 ;;
   esac
-  sleep 60
 done
 
 echo "pulling output..."
-kaggle kernels output "$USER/onprem-llm-bench-gpu" -p results/
-echo "-> results/gpu_grid.json"
+kaggle kernels output "$SLUG" -p results/
+echo "-> results/gpu_grid.json  (+ .log)"

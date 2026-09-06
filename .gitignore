@@ -2,3 +2,4 @@ __pycache__/
 *.pyc
 results/_*
 .cache/
+kaggle/_bundle.py
