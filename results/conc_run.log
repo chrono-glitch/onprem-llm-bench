@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/max_hernandez_gcp/dev/onprem-llm-bench/src/llmbench/conc.py", line 113, in <module>
+    _cli()
+  File "/home/max_hernandez_gcp/dev/onprem-llm-bench/src/llmbench/conc.py", line 106, in _cli
+    rows = run(a.model, a.quant, [int(x) for x in a.levels.split(",")], a.n_gpu_layers)
+  File "/home/max_hernandez_gcp/dev/onprem-llm-bench/src/llmbench/conc.py", line 69, in run
+    _wait_ready(server)
+  File "/home/max_hernandez_gcp/dev/onprem-llm-bench/src/llmbench/conc.py", line 52, in _wait_ready
+    raise RuntimeError("server exited during startup")
+RuntimeError: server exited during startup
