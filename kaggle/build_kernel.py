@@ -71,6 +71,9 @@ def main():
         parts.append(strip_module((SRC / f"{mod}.py").read_text()))
     parts.append(RUNNER)
     bundle = "\n".join(parts)
+    # everything is now flat in one module: drop the `models.` / `quality.` prefixes
+    bundle = re.sub(r"\bmodels\.", "", bundle)
+    bundle = re.sub(r"\bquality\.", "", bundle)
     (Path(__file__).parent / "_bundle.py").write_text(bundle)
     print(f"wrote kaggle/_bundle.py ({len(bundle.splitlines())} lines)")
 

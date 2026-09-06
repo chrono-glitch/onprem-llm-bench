@@ -1,0 +1,39 @@
+[{"stream_name":"stdout","time":28.069600431,"data":"     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.7/1.7 GB 766.9 kB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":33.476114426,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.5/45.5 kB 2.4 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":81.177745863,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 796.8/796.8 kB 12.1 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":81.216545987,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 125.3/125.3 kB 6.3 MB/s eta 0:00:00\n"}
+,{"stream_name":"stdout","time":81.29251409,"data":"   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 79.5 MB/s eta 0:00:00\n"}
+,{"stream_name":"stderr","time":86.09393485,"data":"ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n"}
+,{"stream_name":"stderr","time":86.094002798,"data":"google-adk 1.29.0 requires google-cloud-bigquery-storage\u003e=2.0.0, which is not installed.\n"}
+,{"stream_name":"stdout","time":86.214347362,"data":"Tesla P100-PCIE-16GB, 16384 MiB\n"}
+,{"stream_name":"stdout","time":86.225354656,"data":"=== gemma-2-2b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134184697,"data":"FAILED gemma-2-2b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134216282,"data":"=== gemma-2-2b Q8_0 ===\n"}
+,{"stream_name":"stdout","time":87.134224312,"data":"FAILED gemma-2-2b Q8_0: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134230494,"data":"=== qwen2.5-3b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134236536,"data":"FAILED qwen2.5-3b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134241638,"data":"=== qwen2.5-3b Q8_0 ===\n"}
+,{"stream_name":"stdout","time":87.134247129,"data":"FAILED qwen2.5-3b Q8_0: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134252748,"data":"=== llama-3.2-3b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134260838,"data":"FAILED llama-3.2-3b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134266381,"data":"=== llama-3.2-3b Q8_0 ===\n"}
+,{"stream_name":"stdout","time":87.134359575,"data":"FAILED llama-3.2-3b Q8_0: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.13437123,"data":"=== qwen2.5-7b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134378446,"data":"FAILED qwen2.5-7b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134385698,"data":"=== qwen2.5-7b Q8_0 ===\n"}
+,{"stream_name":"stdout","time":87.13439049,"data":"FAILED qwen2.5-7b Q8_0: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134416604,"data":"=== llama-3.1-8b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134485336,"data":"FAILED llama-3.1-8b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134510811,"data":"=== llama-3.1-8b Q8_0 ===\n"}
+,{"stream_name":"stdout","time":87.134516971,"data":"FAILED llama-3.1-8b Q8_0: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134599871,"data":"=== qwen2.5-14b Q4_K_M ===\n"}
+,{"stream_name":"stdout","time":87.134610941,"data":"FAILED qwen2.5-14b Q4_K_M: NameError: name 'models' is not defined\n"}
+,{"stream_name":"stdout","time":87.134769798,"data":"\n"}
+,{"stream_name":"stdout","time":87.134781052,"data":"wrote 0 cells -\u003e /kaggle/working/gpu_grid.json\n"}
+,{"stream_name":"stderr","time":90.106549704,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":90.10661192,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":90.386317366,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":90.386345428,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":91.243349872,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":92.613690695,"data":"[NbConvertApp] Writing 339775 bytes to __results__.html\n"}
+]
