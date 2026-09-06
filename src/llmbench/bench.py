@@ -24,15 +24,26 @@ def _peak_ram_gb() -> float:
     return round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6, 3)
 
 
-def run(model_key: str, quant: str, n_threads: int | None = None) -> dict:
+def _gpu_name() -> str | None:
+    try:
+        out = os.popen("nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null").read().strip()
+        return out.splitlines()[0] if out else None
+    except Exception:
+        return None
+
+
+def run(model_key: str, quant: str, n_threads: int | None = None,
+        n_gpu_layers: int = 0) -> dict:
     from llama_cpp import Llama
 
     n_threads = n_threads or os.cpu_count()
     path = models.gguf_path(model_key, quant)
     size_gb = models.file_size_gb(path)
+    device = f"gpu:{_gpu_name()}" if n_gpu_layers != 0 else "cpu"
 
     t0 = time.perf_counter()
-    llm = Llama(model_path=path, n_ctx=N_CTX, n_threads=n_threads, verbose=False)
+    llm = Llama(model_path=path, n_ctx=N_CTX, n_threads=n_threads,
+                n_gpu_layers=n_gpu_layers, verbose=False)
     load_s = round(time.perf_counter() - t0, 2)
 
     # a prompt of roughly PREFILL_PROMPT_TOKENS tokens
@@ -69,6 +80,8 @@ def run(model_key: str, quant: str, n_threads: int | None = None) -> dict:
         "model": model_key,
         "quant": quant,
         "params_b": models.REGISTRY[model_key].params_b,
+        "device": device,
+        "n_gpu_layers": n_gpu_layers,
         "file_gb": size_gb,
         "load_s": load_s,
         "n_threads": n_threads,
@@ -84,9 +97,10 @@ def _cli():
     p.add_argument("--model", required=True)
     p.add_argument("--quant", required=True)
     p.add_argument("--threads", type=int)
+    p.add_argument("--n-gpu-layers", type=int, default=0, help="0=CPU, -1=all layers on GPU")
     p.add_argument("--json")
     a = p.parse_args()
-    r = run(a.model, a.quant, a.threads)
+    r = run(a.model, a.quant, a.threads, a.n_gpu_layers)
     print(json.dumps(r, indent=2))
     if a.json:
         with open(a.json, "w") as f:

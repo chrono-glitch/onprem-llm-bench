@@ -19,6 +19,18 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
       3 repeats per cell → report median + spread.
 - [ ] Add `file_gb` for the models missing it in the table.
 
+## GPU track (Kaggle T4 / Colab) — bigger models
+- [x] Harness is device-aware: `bench.run(..., n_gpu_layers=-1)`, `run.py --n-gpu-layers`.
+- [x] `kaggle/kernel.py` + `kaggle/drive.sh` — push a GPU notebook, poll, pull `gpu_grid.json`.
+- [ ] **BLOCKED: need a full Kaggle API token.** The `KGAT_`-prefixed token in
+      `~/.kaggle/kaggle.json` reads datasets but **can't push kernels** (401).
+      Dante: Kaggle → Account → Settings → API → "Create New API Token" → replace
+      `~/.kaggle/kaggle.json`. (Or run the notebook by hand on Colab/Kaggle web.)
+- [ ] Once unblocked: grid qwen2.5-7b / llama-3.1-8b / **qwen2.5-14b / qwen2.5-32b /
+      gemma-2-27b** on T4 → the "is a GPU worth it, and for which models" answer.
+- [ ] The headline comparison: **same models, CPU (this box) vs T4** — decode
+      tok/s, cost/1M tokens, quality.
+
 ## Days 3–6 — the on-prem reality
 - [ ] **Concurrency**: 1 / 2 / 4 parallel requests → throughput vs p50/p95 latency.
       This is the real question for a shared box. (`bench.py` → an async/threaded mode.)

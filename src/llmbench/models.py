@@ -32,8 +32,15 @@ REGISTRY: dict[str, Model] = {
         Model("mistral-7b", 7.2, "bartowski/Mistral-7B-Instruct-v0.3-GGUF", "Mistral-7B-Instruct-v0.3"),
         Model("qwen2.5-7b", 7.6, "bartowski/Qwen2.5-7B-Instruct-GGUF", "Qwen2.5-7B-Instruct"),
         Model("llama-3.1-8b", 8.0, "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF", "Meta-Llama-3.1-8B-Instruct"),
+        # bigger — GPU only (Kaggle T4 / Colab). 14B-Q4 ~9GB fits a T4; 32B-Q4 ~19GB needs offload.
+        Model("qwen2.5-14b", 14.8, "bartowski/Qwen2.5-14B-Instruct-GGUF", "Qwen2.5-14B-Instruct"),
+        Model("qwen2.5-32b", 32.8, "bartowski/Qwen2.5-32B-Instruct-GGUF", "Qwen2.5-32B-Instruct"),
+        Model("gemma-2-27b", 27.2, "bartowski/gemma-2-27b-it-GGUF", "gemma-2-27b-it"),
     ]
 }
+
+# rough "fits on a 16GB T4 fully in VRAM" guide (Q4_K_M): <= ~13B
+GPU_ONLY = {"qwen2.5-14b", "qwen2.5-32b", "gemma-2-27b"}
 
 
 def gguf_path(model_key: str, quant: str) -> str:

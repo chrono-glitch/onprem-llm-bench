@@ -22,6 +22,7 @@ def main():
     p.add_argument("--models", default="gemma-2-2b,llama-3.2-3b,qwen2.5-3b")
     p.add_argument("--quants", default="Q4_K_M,Q8_0")
     p.add_argument("--threads", type=int)
+    p.add_argument("--n-gpu-layers", type=int, default=0, help="0=CPU, -1=all on GPU")
     p.add_argument("--out", default="results")
     a = p.parse_args()
 
@@ -36,7 +37,8 @@ def main():
         for q in quants:
             print(f"  {mk:14} {q:8} ...", end=" ", flush=True)
             cmd = [sys.executable, "-m", "llmbench.bench", "--model", mk,
-                   "--quant", q, "--json", str(tmp)]
+                   "--quant", q, "--json", str(tmp),
+                   "--n-gpu-layers", str(a.n_gpu_layers)]
             if a.threads:
                 cmd += ["--threads", str(a.threads)]
             t0 = time.time()

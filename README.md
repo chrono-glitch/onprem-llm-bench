@@ -1,11 +1,14 @@
 # onprem-llm-bench
 
-**On-prem LLM serving without a GPU: what actually works, and how to choose.**
+**On-prem / edge LLM serving: what actually works, and how to choose.**
 
-Benchmarks small instruct models (2–8B) at multiple GGUF quantization levels on
-a plain CPU box — throughput (prefill / decode tok/s), RAM, load time, and a
-small quality gauge — and turns it into a decision guide: *for a given box and
-use case, which model + quant?*
+Benchmarks instruct models (2–32B) at multiple GGUF quantization levels across
+**CPU and single-GPU (T4)** — throughput (prefill / decode tok/s), RAM/VRAM,
+load time, and a small quality gauge — and turns it into a decision guide:
+*for a given box and use case, which model + quant + engine — and is a GPU worth it?*
+
+- **CPU track:** this repo, runs anywhere. `python -m llmbench.run ...`
+- **GPU track:** `kaggle/` — push a notebook to Kaggle's free T4, pull results.
 
 ## Run
 
