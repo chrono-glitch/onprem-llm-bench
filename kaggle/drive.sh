@@ -33,6 +33,7 @@ while :; do
   sleep 90
   st=$(kaggle kernels status "$SLUG" 2>&1 || true)
   echo "  $(date +%H:%M)  $st"
+  shopt -s nocasematch
   case "$st" in
     *complete*) break ;;
     *error*)    echo "!! run errored — pulling log"; break ;;
