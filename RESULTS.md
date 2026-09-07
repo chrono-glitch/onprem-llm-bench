@@ -103,6 +103,32 @@ serving unit: one interactive session at a time, or a batch queue that people
 don't wait on. For N concurrent live users you need ~N boxes (or a GPU — see
 above), not a bigger prompt for the scheduler.
 
+## Engine #2 — Ollama vs llama-cpp-python  ·  2026-09-07  ·  `results/ollama_grid.json`
+
+Same GGUF weights (imported into Ollama with a `FROM <path>` Modelfile), same
+probe, same box. Ollama is llama.cpp underneath — this isolates *wrapper* cost.
+
+| model | quant | llama-cpp dec | ollama dec | Δ | llama-cpp pre | ollama pre | qual (lcp / oll) |
+|---|---|---|---|---|---|---|---|
+| gemma-2-2b | Q4_K_M | 15.4 | 17.3 | +12% | 61.5 | 71.5 | 0.53 / 0.57 |
+| qwen2.5-3b | Q4_K_M | 16.7 | 18.0 | +8% | 45.5 | 54.5 | 0.70 / 0.73 |
+| llama-3.2-3b | Q4_K_M | 18.4 | 17.2 | −7% | 46.3 | 52.2 | 0.67 / 0.70 |
+| phi-3.5-mini | Q4_K_M | 13.7 | 11.4 | −17% | 26.5 | 33.5 | 0.77 / 0.77 |
+| qwen2.5-7b | Q4_K_M | 9.7 | 9.8 | +1% | 21.5 | 24.8 | 0.87 / 0.87 |
+
+**Mean decode ratio: 1.00×.** Ollama costs nothing in throughput — same kernel.
+Prefill runs slightly *faster* on Ollama across the board (its defaults enable
+flash-attention). Quality is identical within probe noise. phi-3.5-mini is the
+one decode outlier (−17%, n=1); everything else is a wash.
+
+What the Ollama wrapper buys for that (zero) cost: `pull`/`tag`/`rm` model
+management, an always-on OpenAI-compatible server, automatic load/unload with
+`keep_alive`, and a request queue for free. **For serving on-prem, use Ollama
+(or `llama_cpp.server`) — it doesn't cost you tok/s.** In-process
+`llama-cpp-python` is only simpler for a one-shot benchmark like this one.
+
+Import cost: Ollama copies each GGUF blob into `~/.ollama` (~2 GB/model) — plan disk.
+
 ## Method caveats
 
 - ✅ Prefill/decode now use llama.cpp's own perf counters (exact). The CPU table

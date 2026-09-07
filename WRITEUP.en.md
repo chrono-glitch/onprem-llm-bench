@@ -78,6 +78,19 @@ request already saturates all 8 cores, so parallel requests just queue. Latency
 scales ~linearly with load. A CPU box serves **one interactive user at a time**,
 or a batch queue nobody waits on live. For N concurrent users: ~N boxes, or a GPU.
 
+## Engine: Ollama vs llama-cpp-python — the wrapper is free
+
+Both are llama.cpp underneath. I imported the same GGUF files into Ollama and ran
+the same probe. **Mean decode ratio: 1.00×** — Ollama's HTTP layer and scheduler
+cost nothing in throughput. Prefill is actually a touch faster on Ollama (its
+defaults turn on flash-attention). Quality identical.
+
+So the choice is about operations, not speed. Ollama gives you model management
+(`pull`/`tag`/`rm`), an always-on OpenAI-compatible endpoint, auto load/unload,
+and a request queue — for no tok/s penalty. **For serving on-prem, use Ollama or
+`llama_cpp.server`.** Raw in-process `llama-cpp-python` is only simpler for a
+one-shot benchmark. (Ollama does copy each GGUF into `~/.ollama`, ~2 GB/model.)
+
 ## Caveats
 
 30-item quality probe (directional, not a real eval). Single run per cell — 3

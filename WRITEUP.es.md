@@ -81,6 +81,20 @@ hacen cola. La latencia crece casi lineal con la carga. Una caja de CPU sirve
 **un usuario interactivo a la vez**, o una cola de batch que nadie espera en vivo.
 Para N usuarios concurrentes: ~N cajas, o una GPU.
 
+## Motor: Ollama vs llama-cpp-python — el wrapper es gratis
+
+Los dos son llama.cpp por debajo. Importé los mismos archivos GGUF a Ollama y
+corrí la misma prueba. **Ratio de decode promedio: 1.00×** — la capa HTTP y el
+scheduler de Ollama no cuestan nada en throughput. El prefill hasta es un poco
+más rápido en Ollama (sus defaults activan flash-attention). Calidad idéntica.
+
+Entonces la elección es de operación, no de velocidad. Ollama te da gestión de
+modelos (`pull`/`tag`/`rm`), un endpoint compatible con OpenAI siempre activo,
+carga/descarga automática, y una cola de peticiones — sin penalización de tok/s.
+**Para servir on-prem, usá Ollama o `llama_cpp.server`.** `llama-cpp-python`
+en proceso solo es más simple para un benchmark de una sola pasada. (Ollama copia
+cada GGUF a `~/.ollama`, ~2 GB por modelo.)
+
 ## Advertencias
 
 Prueba de calidad de 30 ítems (direccional, no es un benchmark real). Un solo run

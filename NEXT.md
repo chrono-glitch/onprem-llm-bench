@@ -38,8 +38,11 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
       → `results/conc.json`, folded into RESULTS.md + both writeups.
 - [ ] **Realistic workloads**: a long-context RAG prompt (~3k tokens) vs a short
       chat prompt. Prefill dominates RAG; decode dominates chat.
-- [ ] **Engine #2 — Ollama** *(needs Dante: `curl -fsSL https://ollama.com/install.sh | sudo sh`)*.
-      Same grid via the Ollama API → wrapper overhead? model-management value?
+- [x] **Engine #2 — Ollama** (`llmbench.ollama_bench`, `llmbench.engines` compare).
+      5 cells, Q4_K_M. Finding: **mean decode ratio 1.00× — the wrapper is free**
+      (same llama.cpp kernel; Ollama prefill even slightly faster). Use Ollama /
+      `llama_cpp.server` for serving; in-process lcp only simpler for a one-shot.
+      → `results/ollama_grid.json`, folded into RESULTS.md + both writeups.
 
 ## Days 7–10 — the deliverable
 - [ ] **The decision guide**: a lookup — "box with N cores / M GB RAM, use-case
