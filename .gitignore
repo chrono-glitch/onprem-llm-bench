@@ -1,5 +1,9 @@
 __pycache__/
 *.pyc
-results/_*
 .cache/
+*.log
+results/_*
+results/grid_*.json
+results/all.json
+results/latest.*
 kaggle/_bundle.py

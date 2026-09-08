@@ -1,9 +1,0 @@
-22:47 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:48 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:50 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:51 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:53 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:54 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.RUNNING"
-22:56 nostalgiasistemas/onprem-llm-bench-gpu has status "KernelWorkerStatus.COMPLETE"
-Output file downloaded to results/gpu_grid.json
-Kernel log downloaded to results/onprem-llm-bench-gpu.log 

@@ -1,0 +1,6 @@
+# CPU track. Install llama-cpp-python from the prebuilt CPU wheel:
+#   pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python>=0.3.0
+huggingface-hub>=0.24
+matplotlib>=3.7
+# engine #2 (optional): Ollama — install separately from https://ollama.com

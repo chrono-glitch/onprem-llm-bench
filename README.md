@@ -7,10 +7,10 @@ per-token cloud bill doesn't fit. They have a normal server: 8 CPU cores, ~30 GB
 RAM, **no GPU**. Which open model, at which quantization, on which engine — and is
 a GPU worth buying?
 
-This benchmarks instruct models (2–32B) at multiple GGUF quant levels across
+This benchmarks instruct models (2–14B) at multiple GGUF quant levels across
 **CPU and a single 16 GB GPU**, measuring prefill/decode throughput, RAM/VRAM,
-load time, concurrency behaviour, and a small quality gauge — then turns it into
-a decision guide.
+load time, concurrency behaviour, run-to-run noise, and a small quality gauge —
+then turns it into a decision guide.
 
 - **[RESULTS.md](RESULTS.md)** — every number: CPU grid, GPU grid, CPU-vs-GPU
   cost model, concurrency curve, Ollama-vs-llama.cpp engine comparison.
@@ -30,6 +30,9 @@ a decision guide.
    `llama-cpp-python` decode ratio is 1.00×. Pick the engine for operations.
 6. **A GPU loses on $/token** (≈8× the rent, ≈3.5–4× the decode speed) but wins
    on latency, RAG prefill (20–30×), and 14B-class models CPU can't run usefully.
+7. **A shared box costs predictability** — under multi-tenant load throughput
+   drops ~40 % and run-to-run variance rises to ±10 % for 7–8B models;
+   `qwen2.5-3b` holds to ±1.5 %. Size for ~0.6× the headline number.
 
 ## Run
 

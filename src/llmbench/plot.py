@@ -1,6 +1,6 @@
 """Pareto plot from a grid JSON: quality vs decode tok/s, bubble = peak RAM.
 
-    python -m llmbench.plot results/latest.json
+    python -m llmbench.plot results/cpu_all.json
 """
 
 from __future__ import annotations
@@ -34,4 +34,4 @@ def main(path: str):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "results/latest.json")
+    main(sys.argv[1] if len(sys.argv) > 1 else "results/cpu_all.json")
