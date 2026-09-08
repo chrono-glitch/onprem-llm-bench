@@ -44,11 +44,13 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
 
 ## Days 7–10 — the deliverable
 - [x] **The decision guide** → `DECISION.md` (box × use-case → model+quant+engine).
-- [x] **Writeup** (ES + EN) drafted with findings + guide + GPU + concurrency + engine.
-      Still to do: final read-through, publish to nostalgiasistemas.com + LinkedIn.
+- [x] **Writeups** (ES + EN) — finished, GPU section integrated, ES/EN cross-linked.
 - [x] **README** rewritten — headline findings, run commands, layout, caveats.
-- [ ] **Push to GitHub** (`chrono-glitch` or `nostalgiasistemas` — Dante decides).
-- [ ] Regenerate plots after the N=3 re-run; sanity-check DECISION.md vs new numbers.
+- [x] **LICENSE** (MIT), `requirements.txt`, `IDEAS.md`, repo cleanup.
+- [x] **PUBLIC: https://github.com/chrono-glitch/onprem-llm-bench** (2026-09-08, 23 commits).
+- [ ] Post the writeup — blog nostalgiasistemas.com + LinkedIn + X. *(Dante)*
+- [ ] Optional: transfer/mirror the repo to `nostalgiasistemas` once that account
+      has auth or is converted to an org.
 
 ## Stretch (only if days 1–10 land)
 - Follow-on project: "the inference server done right" (auth, proxy, metrics,
