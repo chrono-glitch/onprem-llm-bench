@@ -48,7 +48,12 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
 - [x] **README** rewritten — headline findings, run commands, layout, caveats.
 - [x] **LICENSE** (MIT), `requirements.txt`, `IDEAS.md`, repo cleanup.
 - [x] **PUBLIC: https://github.com/chrono-glitch/onprem-llm-bench** (2026-09-08, 23 commits).
-- [ ] Post the writeup — blog nostalgiasistemas.com + LinkedIn + X. *(Dante)*
+- [x] **Announce drafts written** — `announce/linkedin.es.md`, `linkedin.en.md`,
+      `x-thread.en.md`, `blog.md` (publish steps).
+- [x] **Portfolio pages updated** — `chrono-glitch/self_introduction` (new p3
+      project section + nav) and `chrono-glitch/chrono-glitch` profile README.
+- [ ] Post the writeup — blog nostalgiasistemas.com + LinkedIn + X. *(Dante — manual)*
+- [ ] After posting: paste the 4 URLs into `~/history/HISTORY.md` + check this box.
 - [ ] Optional: transfer/mirror the repo to `nostalgiasistemas` once that account
       has auth or is converted to an org.
 
