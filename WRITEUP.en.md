@@ -1,18 +1,20 @@
 # Serving LLMs on-prem with no GPU: the numbers, and how to choose
 
-*Draft — CPU track. The GPU (Kaggle T4/P100) comparison is a follow-up section.*
-
 ## The question
 
 A business wants an LLM running on their own hardware — data can't leave the
 building, or a cloud bill per token doesn't fit the model. They have a normal
 server: 8 CPU cores, ~30 GB RAM, **no GPU**. Which open model, at which
-quantization, actually works there — and is it good enough to ship?
+quantization, on which engine — actually works there, and is it good enough to
+ship? And is a GPU worth buying?
 
 I benchmarked 7 instruct models (2–8 B) at 2–3 GGUF quant levels each on exactly
 that box (8 vCPU AMD EPYC 7B12, `llama-cpp-python`), measuring decode throughput,
 RAM, load time, and a 30-item quality probe (multiple-choice reasoning +
-format-following — a sanity gauge, not MMLU).
+format-following — a sanity gauge, not MMLU). Then I ran the same probe on a
+Kaggle Tesla P100 for the CPU-vs-GPU comparison, tested concurrency (N parallel
+requests at one instance), and compared two engines (in-process `llama-cpp-python`
+vs Ollama). Full numbers and a decision lookup are in the repo.
 
 ## The three findings that matter
 
@@ -57,6 +59,18 @@ Rules of thumb from the data:
 ## Full results
 
 `results/cpu_all.json`, table in `RESULTS.md`, Pareto plot `results/cpu_all.png`.
+
+## GPU (Tesla P100) — the break-even
+
+Same models on a Kaggle P100: decode is **3.5–4× faster** than CPU (3B ~60 tok/s,
+7–8B ~35 tok/s) and **prefill is 20–30× faster** (~800–1700 vs ~55 tok/s). But a
+GPU rents for ~8× a CPU box. So **on pure cost per token, the CPU box wins.**
+
+Get the GPU when: (1) a person is waiting on the output — 60 tok/s vs 17 is a
+different product; (2) you need a model that won't run on CPU — `qwen2.5-14b Q4`
+hits **0.93** quality at a usable 19 tok/s on the P100, vs ~3 tok/s (unusable) on
+CPU; (3) RAG / long prompts — prefill dominates and the GPU is 20–30× ahead.
+On GPU, `Q8_0` is fine — the "Q4 only" rule is CPU-specific.
 
 ## Concurrency: a CPU box is a single-user serving unit
 
@@ -108,17 +122,4 @@ noise envelope above.
 
 ---
 
-*ES: versión en español pendiente — "Servir LLMs on-prem sin GPU: los números y
-cómo elegir".*
-
-## GPU (Tesla P100) — the break-even
-
-Same models on a Kaggle P100: decode is **3.5–4× faster** than CPU (3B ~60 tok/s,
-7–8B ~35 tok/s) and **prefill is 20–30× faster** (~800–1700 vs ~55 tok/s). But a
-GPU rents for ~8× a CPU box. So **on pure cost per token, the CPU box wins.**
-
-Get the GPU when: (1) a person is waiting on the output — 60 tok/s vs 17 is a
-different product; (2) you need a model that won't run on CPU — `qwen2.5-14b Q4`
-hits **0.93** quality at a usable 19 tok/s on the P100, vs ~3 tok/s (unusable) on
-CPU; (3) RAG / long prompts — prefill dominates and the GPU is 20–30× ahead.
-On GPU, `Q8_0` is fine — the "Q4 only" rule is CPU-specific.
+*Versión en español: [`WRITEUP.es.md`](WRITEUP.es.md).*
