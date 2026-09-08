@@ -95,11 +95,21 @@ carga/descarga automática, y una cola de peticiones — sin penalización de to
 en proceso solo es más simple para un benchmark de una sola pasada. (Ollama copia
 cada GGUF a `~/.ollama`, ~2 GB por modelo.)
 
+## Un hallazgo más: una caja compartida te cuesta previsibilidad
+
+Volví a medir algunas celdas 5× cada una. `qwen2.5-3b Q4` es estable (±1.5 %);
+los modelos de 7–8B varían ±10 % entre corridas, y *todos* cayeron ~40 % cuando
+la caja tenía carga de otros procesos (load ~7 en 8 cores). Las cajas on-prem
+casi siempre son compartidas — **dimensioná para ~0.6× el número de referencia y
+±10 %**, y preferí el modelo que se degrada con gracia (`qwen2.5-3b`) si la caja
+hace otras cosas.
+
 ## Advertencias
 
-Prueba de calidad de 30 ítems (direccional, no es un benchmark real). Un solo run
-por celda — 3 repeticiones + dispersión es el siguiente paso de robustez. Los
-números de prefill/decode usan los contadores de rendimiento propios de llama.cpp.
+Prueba de calidad de 30 ítems, determinística a temp=0, direccional — un
+termómetro que detecta un quant roto, no un ranking tipo MMLU. Los números de
+prefill/decode usan los contadores de llama.cpp. El grid de CPU de referencia es
+de un solo inquilino, una corrida por celda; ver la envolvente de ruido arriba.
 
 ## GPU (Tesla P100) — the break-even
 

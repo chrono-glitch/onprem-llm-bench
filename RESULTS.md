@@ -129,10 +129,36 @@ management, an always-on OpenAI-compatible server, automatic load/unload with
 
 Import cost: Ollama copies each GGUF blob into `~/.ollama` (~2 GB/model) — plan disk.
 
+## Measurement noise + the contention finding  ·  2026-09-08  ·  `results/stability.json`
+
+Re-ran 4 cells 5× each (`bench.py --perf-only --perf-repeats 5`) to see how much
+the decode number actually moves:
+
+| model | quant | decode median | run-to-run range | CV |
+|---|---|---|---|---|
+| qwen2.5-3b | Q4_K_M | 11.5 | 11.1–11.6 | **1.5 %** |
+| qwen2.5-7b | Q4_K_M | 6.2 | 5.8–6.8 | 6.3 % |
+| gemma-2-2b | Q4_K_M | 7.9 | 6.6–8.2 | 7.7 % |
+| llama-3.1-8b | Q4_K_M | 5.6 | 5.2–6.8 | 11.3 % |
+
+Two things:
+
+1. **Noise scales with model size.** `qwen2.5-3b` is rock-steady (±1.5 %); the
+   7–8B models swing ±10 %. Bigger models lean harder on memory bandwidth, which
+   is the first thing a noisy neighbour steals.
+2. **This run's absolute numbers are ~40 % below the headline grid** — because
+   the box was under heavy multi-tenant load (load average ~7 on 8 cores with
+   *none* of it ours). That is the real on-prem lesson: **on a shared box you
+   lose both throughput *and* predictability.** The headline table is a
+   single-tenant ceiling; size for ~0.6× of it and ±10 % if the box does anything
+   else. `qwen2.5-3b Q4` degrades most gracefully under contention.
+
+The headline CPU grid stays as measured on 2026-09-06 (single tenant, one run per
+cell); relative ordering is unchanged by any of the above.
+
 ## Method caveats
 
-- ✅ Prefill/decode now use llama.cpp's own perf counters (exact). The CPU table
-  above still shows the earlier wall-clock numbers for a few cells; a clean CPU
-  re-run with the fixed timing is queued (relative findings unchanged).
-- Single run per cell — 3 repeats + spread is the next hardening step.
-- Quality probe is directional (n=30), not MMLU.
+- ✅ Prefill/decode use llama.cpp's own perf counters (exact, no call overhead).
+- Quality probe is deterministic at temp=0 and directional (n=30) — a sanity
+  gauge that catches a broken quant, not an MMLU-grade ranking.
+- GPU grid is single-run; CPU noise envelope above is the reference for both.

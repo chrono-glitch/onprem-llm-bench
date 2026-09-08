@@ -57,7 +57,14 @@ live users you need ~N boxes, or a GPU.
 
 ---
 
-## 4. The short answer
+## 4. Sizing on a shared box
+
+The headline tok/s are a **single-tenant ceiling**. Re-measured under real
+multi-tenant load, throughput dropped ~40 % and run-to-run variance rose to
+±10 % for 7–8B models (`qwen2.5-3b` held to ±1.5 %). If the box does anything
+else: **size for ~0.6× the table, leave ±10 % headroom, prefer `qwen2.5-3b`.**
+
+## 5. The short answer
 
 > **Most on-prem CPU deployments should run `qwen2.5-3b Q4_K_M` for anything
 > interactive and `qwen2.5-7b Q4_K_M` for anything batch, both behind an Ollama

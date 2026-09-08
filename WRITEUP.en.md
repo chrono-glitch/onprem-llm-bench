@@ -91,11 +91,20 @@ and a request queue — for no tok/s penalty. **For serving on-prem, use Ollama 
 `llama_cpp.server`.** Raw in-process `llama-cpp-python` is only simpler for a
 one-shot benchmark. (Ollama does copy each GGUF into `~/.ollama`, ~2 GB/model.)
 
+## One more finding: a shared box costs you predictability
+
+Re-measured a few cells 5× each. `qwen2.5-3b Q4` is rock-steady (±1.5 %); the
+7–8B models swing ±10 % run-to-run, and *all* of them dropped ~40 % when the box
+was busy with other tenants (load ~7 on 8 cores). On-prem boxes are usually
+shared — **size for ~0.6× the headline number and ±10 %**, and prefer the model
+that degrades gracefully (`qwen2.5-3b`) if the box does other work.
+
 ## Caveats
 
-30-item quality probe (directional, not a real eval). Single run per cell — 3
-repeats + spread is the next hardening step. Prefill/decode numbers use
-llama.cpp's own perf counters.
+30-item quality probe, deterministic at temp=0, directional — a sanity gauge that
+catches a broken quant, not an MMLU ranking. Prefill/decode use llama.cpp's own
+perf counters. Headline CPU grid is single-tenant, one run per cell; see the
+noise envelope above.
 
 ---
 
