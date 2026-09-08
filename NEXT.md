@@ -4,20 +4,15 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
 
 ## Done
 - [x] Harness: models / bench / quality / run / plot
-- [x] Run 1 — 3B class × Q4/Q8 (8 cells). `RESULTS.md`, `results/latest.png`.
+- [x] Run 1 + Run 2 folded → CPU grid, 16 cells, `RESULTS.md` + `results/cpu_all.png`.
       Finding: **Q4_K_M ≥ Q8_0 on quality, every model, while faster + lighter.**
-
-## In flight
-- [~] Run 2 — qwen2.5-3b / phi-3.5-mini / mistral-7b / qwen2.5-7b / llama-3.1-8b
-      × Q3_K_M / Q4_K_M. Answers: *does 7B beat 3B enough to justify ~2× RAM and
-      ~½ speed on CPU? where is the quant cliff (does Q3 break things)?*
-      Running in background (~2–3 h). → `results/run2.log`
+      qwen2.5-7b is a quality tier above the whole 3B class (0.87 vs ~0.70).
 
 ## Days 1–3 — the benchmark, hardened
-- [ ] Fold Run 2 into `RESULTS.md`; regenerate the Pareto plot with all points.
-- [ ] Methodology fixes: use llama.cpp's own timing counters for prefill;
-      3 repeats per cell → report median + spread.
-- [ ] Add `file_gb` for the models missing it in the table.
+- [x] Prefill/decode use llama.cpp's own perf counters.
+- [~] **3 throughput repeats/cell → median + spread.** `bench.py --perf-repeats N`,
+      `run.py --perf-repeats N` added. Full CPU grid re-run at N=3 in progress.
+- [ ] Regenerate the Pareto plot from the re-run.
 
 ## GPU track (Kaggle T4 / Colab) — bigger models
 - [x] Harness is device-aware: `bench.run(..., n_gpu_layers=-1)`, `run.py --n-gpu-layers`.
@@ -45,12 +40,12 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
       → `results/ollama_grid.json`, folded into RESULTS.md + both writeups.
 
 ## Days 7–10 — the deliverable
-- [ ] **The decision guide**: a lookup — "box with N cores / M GB RAM, use-case
-      {chat, RAG, batch, agents} → model + quant + engine + expected tok/s".
-- [ ] **Writeup** (ES + EN): the numbers, the Q4-vs-Q8 finding, the guide.
-      Target: blog nostalgiasistemas.com + LinkedIn + X.
-- [ ] **Push to GitHub** (`chrono-glitch` or `nostalgiasistemas` — decide).
-- [ ] Model card / repo README polish.
+- [x] **The decision guide** → `DECISION.md` (box × use-case → model+quant+engine).
+- [x] **Writeup** (ES + EN) drafted with findings + guide + GPU + concurrency + engine.
+      Still to do: final read-through, publish to nostalgiasistemas.com + LinkedIn.
+- [x] **README** rewritten — headline findings, run commands, layout, caveats.
+- [ ] **Push to GitHub** (`chrono-glitch` or `nostalgiasistemas` — Dante decides).
+- [ ] Regenerate plots after the N=3 re-run; sanity-check DECISION.md vs new numbers.
 
 ## Stretch (only if days 1–10 land)
 - Follow-on project: "the inference server done right" (auth, proxy, metrics,
@@ -60,6 +55,11 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
   off the back of what the benchmark surfaces.
 
 ## What Dante does (outward / manual)
-1. `curl -fsSL https://ollama.com/install.sh | sudo sh` — for the engine #2 comparison.
-2. Decide the GitHub org for the push.
-3. Read `RESULTS.md` after each run and sanity-check the findings against intuition.
+1. Decide the GitHub org for the push (`chrono-glitch` or `nostalgiasistemas`).
+2. Read `RESULTS.md` + `DECISION.md` and sanity-check the findings against intuition.
+3. Publish the writeup (blog + LinkedIn + X) once the repo is public.
+
+## Still open (smaller)
+- Realistic workloads: a ~3k-token RAG prompt vs a short chat prompt
+  (prefill-dominated vs decode-dominated) — partly covered by the prefill numbers.
+- Optional: DECISION.md as a shareable HTML artifact for the portfolio.

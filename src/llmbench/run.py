@@ -23,6 +23,7 @@ def main():
     p.add_argument("--quants", default="Q4_K_M,Q8_0")
     p.add_argument("--threads", type=int)
     p.add_argument("--n-gpu-layers", type=int, default=0, help="0=CPU, -1=all on GPU")
+    p.add_argument("--perf-repeats", type=int, default=1)
     p.add_argument("--out", default="results")
     a = p.parse_args()
 
@@ -38,7 +39,8 @@ def main():
             print(f"  {mk:14} {q:8} ...", end=" ", flush=True)
             cmd = [sys.executable, "-m", "llmbench.bench", "--model", mk,
                    "--quant", q, "--json", str(tmp),
-                   "--n-gpu-layers", str(a.n_gpu_layers)]
+                   "--n-gpu-layers", str(a.n_gpu_layers),
+                   "--perf-repeats", str(a.perf_repeats)]
             if a.threads:
                 cmd += ["--threads", str(a.threads)]
             t0 = time.time()
@@ -49,7 +51,9 @@ def main():
             row = json.loads(tmp.read_text())
             tmp.unlink()
             rows.append(row)
-            print(f"decode {row['decode_tok_s']:>5} tok/s | ram {row['peak_ram_gb']:>5} GB "
+            sp = row.get("decode_spread")
+            sp_s = f" ({sp[0]}–{sp[1]})" if sp else ""
+            print(f"decode {row['decode_tok_s']:>5} tok/s{sp_s} | ram {row['peak_ram_gb']:>5} GB "
                   f"| quality {row['quality']:.2f}  ({time.time() - t0:.0f}s)")
 
     if not rows:
