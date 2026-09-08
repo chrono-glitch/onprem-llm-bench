@@ -10,9 +10,12 @@ Commit: 2h/day, no pivot, re-evaluate day 11 with the artifact.
 
 ## Days 1–3 — the benchmark, hardened
 - [x] Prefill/decode use llama.cpp's own perf counters.
-- [~] **3 throughput repeats/cell → median + spread.** `bench.py --perf-repeats N`,
-      `run.py --perf-repeats N` added. Full CPU grid re-run at N=3 in progress.
-- [ ] Regenerate the Pareto plot from the re-run.
+- [x] **Throughput repeats → median + spread + CV.** `bench.py --perf-repeats N
+      / --perf-only`. Noise pass on 4 cells (5× each): decode CV 1.5–11 %
+      (scales with model size). **Contention finding:** under multi-tenant load
+      throughput fell ~40 %; qwen2.5-3b degraded most gracefully.
+      → `results/stability.json`, folded into RESULTS.md + DECISION.md + writeups.
+- [x] Headline grid kept as the single-tenant reference (`cpu_all.png` still valid).
 
 ## GPU track (Kaggle T4 / Colab) — bigger models
 - [x] Harness is device-aware: `bench.run(..., n_gpu_layers=-1)`, `run.py --n-gpu-layers`.
